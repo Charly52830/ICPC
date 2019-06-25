@@ -1,0 +1,18 @@
+Priority queue STL.
+Cola de prioridad de tipo máxima por default.
+
+Librería
+#include<queue>
+
+Cómo definir
+Máxima.
+priority_queue<tipo> nombre;
+Mínima.
+priority_queue<tipo,vector<tipo>,greater<tipo> > nombre; 
+
+Funciones
+nombre.push(n): inserta n en la cola.
+nombre.pop(): borra el máximo/mínimo elemento de la cola.
+nombre.top(): regresa el máximo/mínimo elemento de la cola.
+nombre.empty(): regresa 1 si la cola no está vacía o 0 si lo está.
+nombre.size(): regresa cuántos elementos hay en la cola.

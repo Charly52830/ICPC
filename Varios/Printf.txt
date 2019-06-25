@@ -1,0 +1,14 @@
+Tipos de datos
+int i=100;                       %d
+long long ll=(1LL<<48); 	 %lld
+double d=3.1416;                 %lf
+char c='a';                      %c
+char string[]="napadas";         %s
+printf("%d %lld %lf %c %s\n",i,ll,d,c,string);
+
+Formatos
+printf("%.4lf \n",d);    Número de decimales.
+printf("%04d \n",i);     Numero de digitos + ceros a la izquierda.
+printf("%4d \n",i);      Numero de digitos + espacios a la izquierda.
+printf("%x",d); 	 Número en formato hexadecimal
+printf("%o",d); 	 Número en formato octal

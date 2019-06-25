@@ -1,0 +1,38 @@
+Set
+Un set es un AVL Tree de cualquier tipo de dato.
+
+Librería:
+#include<set>
+
+Para declarar:
+set<tipo>nombre;
+
+Funciones:
+napadas.size(): devuelve el tamaño del set.
+napadas.insert(n): inserta el elemento x en el set.
+napadas.erase(n): borra n del set.
+napadas.count(n): regresa un 1 si n está en el set o un 0 si no.
+napadas.clear(): limpia el set EN TIEMPO LINEAL
+
+Búsqueda binaria:
+upper_bound
+Regresa un iterador al primer elemento que es considerado que va JUSTO DESPUÉS del valor.
+Regresará el valor de s.end() si el valor es más grande que el mayor valor del conjunto.
+set<int>::iterator it=s.upper_bound(5);
+
+lower_bound
+Regresa un iterador al primer elemento que no se considera que va antes del valor, es decir,
+al valor o al siguiente valor.
+set<int>::iterator it=s.lower_bound(5);
+
+Se puede acceder a los elementos mediante iteradores (punteros de un colección).
+set<tipo>::iterator it=nombre.begin()+i;
+
+Existen otros tipos de set que funcionan de manera similar.
+(C++98)
+multiset: permite varios elementos repetidos en el conjunto.
+La desventaja del multiset es que si existen elementos del mismo tipo, al eliminar uno de eliminarán todos.
+
+(C++11)
+unordered_set: utiliza hashing. Sus operaciones son O(1) en promedio.
+unordered_multiset.

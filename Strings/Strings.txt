@@ -1,0 +1,132 @@
+Strings
+
+Declaración:
+C:
+char str[10000];
+C++:
+string str;
+Java
+String str;
+
+Lectura:
+C:
+scanf("%s",&str); //& pocional
+C++:
+cin>>str;
+Java:
+Scanner cin=new Scanner(System.in);
+str=cin.next();
+
+Lectura de más de una palabra:
+C:
+fgets(str,tamaño_del_string,stdin);
+C++:
+getline(cin,str);
+Java:
+str=cin.nextLine();
+
+Impresión:
+C:
+printf("s= %s\n");
+C++: 
+cout<<"s= "<<s<<endl; //Esta manera es muy lenta
+Java:
+System.out.print("s= "+s+"\n");
+System.out.println("s= "+s);
+System.out.printf("s= %s\n",str); //Mejor manera
+
+Comparar dos Strings:
+C:
+strcmp(str,"test"); //regresa un entero, un 0 si son iguales
+C++:
+if(str=="test")
+Java:
+str.equals("test"); //regresa un valor booleano, un 0 si son iguales
+
+Concatenar strings:
+C:
+strcpy(str,"hello");
+strcat(str," world");
+C++:
+str="hello";
+str.append(" world");
+string a="napa",b="das",c=a+b;
+Java:
+str="hello";
+str+=" world";
+
+Busqueda de patrones
+C:
+char *p=strstr(str, substr);
+if (p)
+printf("%d\n", p-str-1);
+C++:
+int pos = str.find(substr);
+if (pos != string::npos)
+cout << pos - 1 << endl;
+//regresa un entero sin signo, el índice de la primera recurrencia que se encuentra de napadas, o -1 si no lo encontró
+Java:
+int pos=str.indexOf(substr);
+if (pos != -1)
+System.out.println(pos);
+
+Split
+C:
+#include <string.h>
+for (char *p=strtok(str, " ");
+p;
+p = strtok(NULL, " "))
+printf("%s\n", p);
+C++:
+#include <sstream>
+stringstream p(str);
+while (!p
+(!p.eof())
+eof()) {
+string token;
+p >> token;
+cout << token << endl;
+}
+
+Substring.
+C++:
+nombre.substr(i,n); //regresa un string, el substring que empieza en la posición i y es de tamaño n.
+
+String a entero.
+C:
+#include<stdlib.h>
+char s[]="52830";
+int n=atoi(s);
+C++11:
+#include<string>
+string s="52830";
+int n=stoi(s);
+
+Entero a String.
+C++11:
+#include<string>
+int n=52830;
+string s=to_string(n);
+cout<<s<<endl;
+
+Strings separados por coma.
+#include<sstream>
+#include<iostream>
+using namespace std;
+
+int main() {
+	string s,s1;
+	getline(cin,s);
+	stringstream strim(s);
+	while(getline(strim,s1,',')) 
+		cout<<s1<<endl;
+	return 0;
+}
+/**
+*	Input:
+*	jaja,jeje,jiji
+*	Output:
+*	jaja
+*	jeje
+*	jiji
+*/

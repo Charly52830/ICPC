@@ -59,6 +59,34 @@ node* build(int *A,int n) {
 	return it;
 }
 
+int query(node *it,int i,int j,int val,int sum=0) {
+	int index=sum+size(it->l);
+	int leftIndex=index-size(it->l),rightIndex=index+size(it->r);
+	int res=0;
+	if(i==leftIndex && j==rightIndex) {	//Encontró el rango
+		
+	}
+	else if(index < i) {	//Buscar a la derecha
+		res+=query(it->r,i,j,val,index+1);
+	}
+	else if(index > j) {	//Buscar a la izquierda
+		res+=query(it->l,i,j,val,sum);
+	}
+	else {
+		/**
+		*	Evaluar si it->val cumple con la condición
+		*	if(it->val <= val)
+		*		res++
+		*/
+		
+		if(i < index) 	//Dividir a la izquierda
+			res+=query(it->l,i,index-1,val,sum);
+		if(index < j) 	//Dividir a la derecha
+			res+=query(it->r,index+1,j,val,index+1);
+	}
+	return res;
+}
+
 int main() {
 	int A[]={5,2,8,3,0};
 	node *treap=build(A,5);

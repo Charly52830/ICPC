@@ -20,6 +20,7 @@ struct node {
 		val=v;
 		l=r=NULL;
 		weight=randInt();
+		size=1;
 	}
 	
 };
@@ -29,6 +30,8 @@ inline int size(node *it) {
 }
 
 void print( node *it ) {
+	if(!it)
+		return;
 	if( it->l != NULL ) 
 		print( it->l );
 	cout<< it->val <<" ";
@@ -85,6 +88,40 @@ int query(node *it,int i,int j,int val,int sum=0) {
 			res+=query(it->r,index+1,j,val,index+1);
 	}
 	return res;
+}
+
+void split(node *it,node *&left,node *&right,int i) {
+	if(!it) 
+		left=right=NULL;
+	else {
+		if(size(it->l)<i) {
+			split(it->r,it->r,right,i-size(it->l)-1);
+			left=it;
+		}
+		else {
+			split(it->l,left,it->l,i);
+			right=it;
+		}
+		it->size=size(it->l)+size(it->r)+1;
+	}
+}
+
+void merge(node *&it,node *left,node *right) {
+	if(!left) 
+		it=right;
+	else if(!right) 
+		it=left;
+	else {
+		if(left->weight<right->weight) {
+			merge(left->r,left->r,right);
+			it=left;
+		}
+		else {
+			merge(right->l,left,right->l);
+			it=right;
+		}
+		it->size=size(it->l)+size(it->r)+1;
+	}	
 }
 
 int main() {

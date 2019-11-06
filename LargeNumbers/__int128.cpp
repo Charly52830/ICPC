@@ -20,6 +20,13 @@ istream& operator >> (istream &in, __int128 &t) {
 	return in;
 }
 
+__int128 construct(string str_number) {
+	__int128 number=0;
+	for(int i=0;i<str_number.size();i++)
+		number=number*10 + (str_number[i]-'0');
+	return number;
+}
+
 int main() {
 	ios_base::sync_with_stdio(0);
 	cin.tie(0);
@@ -27,5 +34,7 @@ int main() {
 	__int128 a,b;
 	cin>>a>>b;
 	cout<<a<<" "<<b<<endl;
+	a=construct("1234567890123456789");
+	cout<<a<<endl;
 	return 0;
 }

@@ -3,6 +3,10 @@
 #define B (972663749)
 #define A1 (48271)
 #define B1 (2147483647)
+#define A2 (16807)
+#define B2 (2147483647)
+#define A3 (65539)
+#define B3 (2147483648)
 #define N 500010
 using namespace std;
 

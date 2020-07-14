@@ -23,9 +23,9 @@ class SuffixAutomata {
 	state* states;
 	int size, last;
 	
-	void init_automata() {
-		states = (state*) malloc(2 * MAXLEN * sizeof(state));
-		for(int i = 0; i < 2 * MAXLEN; i++) {
+	void init_automata(int N) {
+		states = (state*) malloc(2 * N * sizeof(state));
+		for(int i = 0; i < 2 * N; i++) {
 			state tmp_state;
 			states[i] = tmp_state;
 		}
@@ -68,9 +68,9 @@ class SuffixAutomata {
 	
 	public:
 	
-	SuffixAutomata(const char *str) {
-		init_automata();
-		for(int x = 0; str[x] != '\0'; x++)
+	SuffixAutomata(string str) {
+		init_automata(str.size());
+		for(int x = 0; x < str.size(); x++)
 			add_char(str[x]);
 	}
 	

@@ -24,6 +24,11 @@ struct chash {
     int operator()(int x) const { return hash_f(x)^RANDOM; }
 };
 
+// Comparador personalizado
+template <class T> struct comparator : binary_function <T,T,bool> {
+  bool operator() (const T& x, const T& y) const {return x > y;}
+};
+
 int main() {
 	gp_hash_table<int, int,chash> table;	//Tabla hash
 	table[5]++;

@@ -1,5 +1,6 @@
 /**
 *	Edmond-Karp for max flow.
+*	O(|V| * |E|^2)
 */
 
 #include<tuple>

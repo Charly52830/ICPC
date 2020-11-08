@@ -1,18 +1,21 @@
-#include<iostream>
-#define oo 1000000
+#include <vector>
+#include <iostream>
 
 using namespace std;
 
 /**
  * Definición de Segment Tree para distintas preguntas comunes.
  * range minimum query: 
- *  SegmentTree<int> st(A, n, min_function, oo);
+ *  SegmentTree<int> st(v, min_function);
  *
  * range maximum query:
- *  SegmentTree<int> st(A, n, max_function, 0);
+ *  SegmentTree<int> st(v, max_function);
  *
  * range sum query:
- *  SegmentTree<int> st(A, n, sum_function, 0);
+ *  SegmentTree<int> st(v, sum_function);
+ *
+ * range gcd/lcm query:
+ *  SegmentTree<int> st(v, gcd_function);
  *
  * range sum query con n elementos iniciados en 0:
  *  SegmentTree<int> st(n, sum_function, 0);
@@ -43,6 +46,10 @@ int sum_function(int a,int b) {
 	return a+b;
 }
 
+int gcd_function(int a, int b) {
+	return !b ? a : gcd_function(b, a % b);
+}
+
 template <typename T>
 class SegmentTree {
 
@@ -58,7 +65,7 @@ class SegmentTree {
 	 */
 	
 	T (*func) (T,T);
-	T *tree, def;
+	T *tree;
 	int n;
 	
 	public:
@@ -66,17 +73,15 @@ class SegmentTree {
 	/**
 	 * Constructor que crea un Segment Tree a partir de un arreglo.
 	 *
-	 * A: arreglo del que se construye el segment tree.
-	 * size: tamaño del arreglo.
+	 * v: arreglo del que se construye el segment tree.
 	 * custom_function: función con la que trabaja el segment tree.
-	 * default_value: valor por defecto utilizado para responder preguntas.
 	 */
-	SegmentTree(T *A, int size, T (*custom_function) (T,T), T default_value) : func(custom_function) {
-		n = size;
-		def = default_value;
+	SegmentTree(vector<T> & v, T (*custom_function) (T,T)) {
+		n = v.size();
+		func = custom_function;
 		tree = new T[2 * n];
 		for(int i = 0; i < n; i++) 
-			tree[i + n] = A[i];
+			tree[i + n] = v[i];
 		for(int i = n - 1; i > 0; i--)
 			tree[i] = func(tree[i * 2], tree[i * 2 + 1]);
 	}
@@ -89,12 +94,12 @@ class SegmentTree {
 	 * custom_function: función con la que trabaja el segment tree.
 	 * default_value: valor por defecto de los elementos del arreglo.
 	 */
-	SegmentTree(int size, T (*custom_function) (T,T), T default_value = 0) : func(custom_function) {
+	SegmentTree(int size, T (*custom_function) (T,T), T default_value = 0) {
 		n = size;
-		def = default_value;
+		func = custom_function;
 		tree = new T[2 * n];
 		for(int i = 0; i < n; i++) 
-			tree[i + n] = def;
+			tree[i + n] = default_value;
 		for(int i = n - 1; i > 0; i--)
 			tree[i] = func(tree[i * 2], tree[i * 2 + 1]);
 	}
@@ -106,14 +111,14 @@ class SegmentTree {
 	 *
 	 * i: indice inferior.
 	 * j: indice superior.
-	 *
 	 */
 	T query(int i, int j) {
-		T ans = def;
+		T ans;
+		bool b = 0;
 		i += n, j += n;
 		while(i <= j) {
-			if(i & 1) ans = func(ans, tree[i++]);
-			if(!(j & 1)) ans = func(ans, tree[j--]);
+			if(i & 1) ans = b ? func(ans, tree[i ++]) : tree[i ++], b = 1;
+			if(!(j & 1)) ans = b ? func(ans, tree[j --]) : tree[j --], b = 1;
 			i >>= 1, j >>= 1;
 		}
 		return ans;
@@ -134,13 +139,6 @@ class SegmentTree {
 		else tree[i] = val;
 		for(i >>= 1; i > 0; i >>= 1)
 			tree[i] = func(tree[2 * i], tree[2 * i + 1]);
-	}
-	
-	/**
-	 * Operador que devuelve el valor actual del arreglo en la posición i
-	 */
-	T operator [] (int i) {
-		return tree[i + n];
 	}
 	
 };

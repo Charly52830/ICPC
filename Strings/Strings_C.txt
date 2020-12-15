@@ -1,0 +1,60 @@
+#include <cassert>
+#include <string.h>
+
+Declaración
+	const int SIZE = 110;
+	char str[SIZE];
+
+Declaración literal
+	char str[] = "Hola mundo";
+
+Tamaño
+	// Nota: tiempo de ejecución lineal O(size)
+	int size = strlen(str);
+
+Lectura
+	scanf("%s", str);
+
+Lectura de más de una palabra
+	fgets(str, SIZE, stdin);
+	int size = strlen(str);
+	str[-- size] = '\0';
+	
+Impresión
+	printf("%s\n", str);
+	
+Comparar dos strings
+	int comp = strcmp(str1, str2);
+	if(comp < 0)
+		printf("String izquierdo es lexicograficamente menor que el string derecho\n");
+	else if(comp > 0)
+		printf("String derecho es lexicográficamente menor que el string izquierdo\n");
+	else
+		printf("Los strings son iguales\n");
+
+Concatenar dos strings
+	assert(strlen(str1) + strlen(str2) < SIZE);
+	strcat(str1, str2);
+
+Copiar un string en otro
+	assert(strlen(str2) < SIZE);
+	strcpy(str1, str2);
+
+Búsqueda de patrones
+	for(char * next_pattern = strstr(text, pattern); next_pattern; next_pattern = strstr(next_pattern + 1, pattern)) {
+		procesar_posicion(next_pattern - text);
+	}
+
+Split
+	char separador[] = " ";
+	for(char * next = strtok(str, separador); next; next = strtok(NULL, separador)) {
+		printf("%s\n", next);
+	}	
+	
+String a entero
+	int n;
+	sscanf(str, "%d", &n);
+
+Entero a string
+	int n = 52830;
+	sprintf(str, "%d", n);

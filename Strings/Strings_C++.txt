@@ -1,0 +1,54 @@
+Declaración
+	string str;
+
+Tamaño
+	int size = str.size();
+
+Lectura
+	cin >> str;
+
+Lectura de más de una palabra
+	getline(cin, str);
+	getline(cin, str);	// Uno mas si antes se leyó algún entero
+	str.pop_back();
+	
+Impresión
+	cout << str << endl;
+	
+Comparar dos strings
+	str1 != str2
+
+Concatenar dos strings
+	str1 += str2;
+	str1 = str1 + str2
+
+Búsqueda de patrones
+	for(size_t pos = text.find(pattern); pos != string::npos; pos = text.find(pattern, pos + 1)) {
+		procesar_posicion(int(pos));
+	}
+
+Split
+	vector<string> split(string s, char sep) {
+		vector<string> tokens;
+		string token;
+		istringstream token_stream(s);
+		while(getline(token_stream, token, sep)) 
+			tokens.push_back(token);
+		return tokens;
+	}
+
+Substring
+	string sub_str = str.substr(posicion, tamaño);
+	
+String a entero
+	int n = stoi("52830");
+
+Entero a string
+	string num = to_string(52830);
+
+String de C++ a string de C
+	char * cstr = new char[str.size() + 1];
+	strcpy(cstr, str.c_str());
+
+String de C a string de C++
+	string str(cstr);

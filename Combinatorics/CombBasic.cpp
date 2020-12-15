@@ -46,7 +46,7 @@ void precal_comb() {
 	forn(i, MAXN) {
 		C[i][0] = 1; if(i < MAXK) C[i][i] = 1;
 		forr(j, 1, min(i, MAXK))
-			C[i][j] = (C[i - 1][j - i] + C[i - 1][j]) % M;
+			C[i][j] = (C[i - 1][j - 1] + C[i - 1][j]) % M;
 	}
 }
 
@@ -57,7 +57,7 @@ void precal_comb(ll N, ll K) {
 	forn(i, N) {
 		C[i][0] = 1; if(i < K) C[i][i] = 1;
 		forr(j, 1, min(i, K))
-			C[i][j] = (C[i - 1][j - i] + C[i - 1][j]) % M;
+			C[i][j] = (C[i - 1][j - 1] + C[i - 1][j]) % M;
 	}
 }
 

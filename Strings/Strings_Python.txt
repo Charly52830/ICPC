@@ -1,0 +1,40 @@
+Declaración
+	string = "Hola mundo"
+	
+Tamaño
+	size = len(string)
+
+Lectura de más de una palabra
+	string = input()
+
+Lectura
+	str1, str2 = input().split(' ')
+	
+Impresión
+	print(string)
+	
+Comparar dos strings
+	str1 != str2
+
+Concatenar dos strings
+	str1 += str2;
+	str1 = str1 + str2
+
+Búsqueda de patrones
+	pos = string.find("patron")
+	if pos != -1 :
+		# Substring encontrado
+	else :
+		# Substring no encontrado
+
+Split
+	string.split(' ')
+
+Substring
+	sub_str = string[pos_inicial : pos_final - 1]
+	
+String a entero
+	n = int("52830")
+
+Entero a string
+	n = str(52830)

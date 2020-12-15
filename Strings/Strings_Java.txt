@@ -1,0 +1,44 @@
+Declaración
+	String str;
+
+Tamaño
+	int size = str.length();
+
+Lectura
+	Scanner cin = new Scanner(System.in);
+	str = cin.next();
+
+Lectura de más de una palabra
+	str=cin.nextLine();
+	
+Impresión
+	System.out.printf("%s", str);
+	
+Comparar dos strings
+	if(str1.equals(str2)) {
+		// Es igual
+	}
+	else {
+		// No es igual
+	}
+
+Concatenar dos strings
+	str1 += str2;
+	str1 = str1 + str2
+
+Búsqueda de patrones
+	int pos=str.indexOf(substr);
+	if (pos != -1)
+		System.out.println(pos);
+
+Split
+	String tokens [] = str.split(" ");
+
+Substring
+	String substr = str.substring(primer_posicion, ultima_posicion);
+	
+String a entero
+	int n = Integer.parseInt("52830");
+
+Entero a string
+	String.valueOf(52830);

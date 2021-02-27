@@ -16,6 +16,8 @@ char S[N];
 ll P[N],H[N];
 
 ll Hash(int i,int j) {
+	if(i == 0)
+		return H[j];
 	return ( H[j] - (( H[i-1] * P[j-i+1] ) % B ) + B ) % B;
 }
 

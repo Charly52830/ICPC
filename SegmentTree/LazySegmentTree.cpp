@@ -1,3 +1,4 @@
+#include <cassert>
 #include <vector>
 #include <iostream>
 using namespace std;
@@ -37,9 +38,6 @@ using namespace std;
  *  l: índice inferior del segmento del arreglo que abarca el nodo
  *  r: índice superior del segmento del arreglo que abarca el nodo
  */
-
-#define L(k) (k << 1)
-#define R(k) (k << 1) + 1
 
 // Funciones de range query
 int min_function(int a,int b) {
@@ -85,6 +83,8 @@ void lazy_sum_max(int & tree, int & lazy, bool marked, int update_val, int l, in
 		lazy = update_val;
 }
 
+#define L(k) (k << 1)
+#define R(k) (k << 1) + 1
 template <typename T>
 class LazySegmentTree {
 	
@@ -207,25 +207,26 @@ class LazySegmentTree {
 	
 	/**
 	 * Pregunta del arreglo en el rango de i a j evaluando con la función asignada.
-	 * Indexado desde 0 y los segmentos son cerrados (la pregunta incluye a los
-	 * indices i y j).
+	 * Indexado desde 0 con rangos inclusivos.
 	 *
 	 * i: indice inferior
 	 * j: indice superior
 	 */
 	T query(int i, int j) {
+		assert(0 <= i && i < n && 0 <= j && j < n);
 		return query(i, j, 1, 0, n - 1);
 	}
 	
 	/**
 	 * Función para actualizar un segmento del arreglo.
-	 * Indexado desde 0.
+	 * Indexado desde 0 con rangos inclusivos.
 	 *
 	 * i: indice inferior del segmento
 	 * j: indice superior del segmento
 	 * val: valor con el que se va a actualizar el segmento
 	 */
 	void update(int i, int j, T val) {
+		assert(0 <= i && i < n && 0 <= j && j < n);
 		update(i, j, 1, 0, n - 1, val);
 	}
 	

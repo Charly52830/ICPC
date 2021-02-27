@@ -12,9 +12,10 @@
 #define S second
 #define mp make_pair
 #define pb push_back
+#define vi vector<int>
 #define forn(i, n) for(int i = 0; i < int(n); i ++)
 #define forr(i, n) for(int i = int(n); ~i; i --)
-#define fore(i, a, b) for(int i = int(a); i <= int(b); i ++)
+#define fore(i, a, b) for(int i = int(a); i < int(b); i ++)
 using namespace std;
 
 typedef long long ll;

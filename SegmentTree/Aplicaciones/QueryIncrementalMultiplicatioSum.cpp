@@ -1,51 +1,23 @@
-#include <vector>
 #include <iostream>
+#include <vector>
 using namespace std;
 
-/**
- * Definición de Segment Tree para distintas preguntas comunes.
- * range minimum query: 
- *  SegmentTree<int> st(v, min_function);
- *
- * range maximum query:
- *  SegmentTree<int> st(v, max_function);
- *
- * range sum query:
- *  SegmentTree<int> st(v, sum_function);
- *
- * range gcd/lcm query:
- *  SegmentTree<int> st(v, gcd_function);
- *
- * range sum query con n elementos iniciados en 0:
- *  SegmentTree<int> st(n, sum_function, 0);
- * 
- * actualizar arreglo sustituyendo el valor del índice i con el valor:
- *  st.update(i, val, false);
- *
- * actualizar arreglo sumando el valor del índice i con el valor val:
- *  st.update(i, val, true);
- *
- * Se puede formar cualquier otro Segment Tree con funciones específicas.
- *
- * Las funciones deben regresar el tipo de dato del que se declaró el Segment Tree.
- * Las funciones deben recibir 2 parámetros del tipo de dato del que se declaró
- * el Segment Tree.
- */
+typedef long long ll;
 
-int min_function(int a,int b) {
-	return min(a, b);
+struct Data {
+	ll size, sum, ans;
+};
+
+Data merge(Data l, Data r) {
+	Data res;
+	res.size = l.size + r.size;
+	res.sum = l.sum + r.sum;
+	res.ans = l.ans + r.ans + l.size * r.sum;
+	return res;
 }
 
-int max_function(int a,int b) {
-	return max(a, b);
-}
-
-int sum_function(int a,int b) {
-	return a + b;
-}
-
-int gcd_function(int a, int b) {
-	return !b ? a : gcd_function(b, a % b);
+Data make_data(int val) {
+	return {1, val, val};
 }
 
 template <typename T, typename I = T>
@@ -159,8 +131,14 @@ class SegmentTree {
 };
 
 int main() {
-	vector<int> v {5, 2, 8, 3, 7};
-	SegmentTree<int> st(v, max_function);
-	cout << st.query(0, 4) << endl;	// 8
+	vector<int> v{4, 9, 2, 1, 3, 4, 7, 6, 7, 2};
+	SegmentTree<Data, int> st(v, merge, make_data);
+	
+	Data query = st.query(0, 3);
+	cout << query.ans << endl;	// 32
+	Data query2 = st.query(6, 9);
+	cout << query2.ans << endl;	// 48
+	Data query3 = merge(query, query2);
+	cout << query3.ans << endl;	// 168
 	return 0;
 }

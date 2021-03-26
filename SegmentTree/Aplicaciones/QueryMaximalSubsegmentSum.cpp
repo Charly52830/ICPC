@@ -3,49 +3,30 @@
 using namespace std;
 
 /**
- * Definición de Segment Tree para distintas preguntas comunes.
- * range minimum query: 
- *  SegmentTree<int> st(v, min_function);
+ * Given a range a[l..r] for each query, find the subsegment with the maximal sum.
+ * Return the sum or 0 for the empty subsegment
  *
- * range maximum query:
- *  SegmentTree<int> st(v, max_function);
- *
- * range sum query:
- *  SegmentTree<int> st(v, sum_function);
- *
- * range gcd/lcm query:
- *  SegmentTree<int> st(v, gcd_function);
- *
- * range sum query con n elementos iniciados en 0:
- *  SegmentTree<int> st(n, sum_function, 0);
- * 
- * actualizar arreglo sustituyendo el valor del índice i con el valor:
- *  st.update(i, val, false);
- *
- * actualizar arreglo sumando el valor del índice i con el valor val:
- *  st.update(i, val, true);
- *
- * Se puede formar cualquier otro Segment Tree con funciones específicas.
- *
- * Las funciones deben regresar el tipo de dato del que se declaró el Segment Tree.
- * Las funciones deben recibir 2 parámetros del tipo de dato del que se declaró
- * el Segment Tree.
+ * It is possible to get the index of the segment with the appropiate changes
  */
 
-int min_function(int a,int b) {
-	return min(a, b);
+struct Data {
+	int sum, pref, suff, ans;
+};
+
+Data merge(Data l, Data r) {
+	Data res;
+	res.sum = l.sum + r.sum;
+	res.pref = max(l.pref, l.sum + r.pref);
+	res.suff = max(r.suff, r.sum + l.suff);
+	res.ans = max(max(l.ans, r.ans), l.suff + r.pref);
+	return res;
 }
 
-int max_function(int a,int b) {
-	return max(a, b);
-}
-
-int sum_function(int a,int b) {
-	return a + b;
-}
-
-int gcd_function(int a, int b) {
-	return !b ? a : gcd_function(b, a % b);
+Data make_data(int val) {
+	Data res;
+	res.sum = val;
+	res.pref = res.suff = res.ans = max(0, val);
+	return res;
 }
 
 template <typename T, typename I = T>
@@ -67,7 +48,6 @@ class SegmentTree {
 	 * - Encontrar el k-ésimo cero en todo el arreglo
 	 * - Encontrar el prefijo de todo el arreglo cuya suma es >= x
 	 * - Encontrar el primer elemento mayor a x en un rango
-	 * - Encontrar el subsegmento de mayor suma en un rango
 	 */
 	#define L(k) (k << 1)
 	#define R(k) (k << 1) + 1
@@ -108,7 +88,7 @@ class SegmentTree {
 	 */
 	void build(vector<I> & v, int i, int l, int r) {
 		if(l == r) 
-			tree[i] = make(v[l]);
+			tree[i] = make(v[l]); 
 		else {
 			int m = l + r >> 1;
 			build(v, L(i), l, m);
@@ -159,8 +139,13 @@ class SegmentTree {
 };
 
 int main() {
-	vector<int> v {5, 2, 8, 3, 7};
-	SegmentTree<int> st(v, max_function);
-	cout << st.query(0, 4) << endl;	// 8
+	vector<int> v {4, -9, 2, -1, -3, 4, 7, -6, 7, 2};
+	SegmentTree<Data, int> st(v, merge, make_data);
+	
+	Data ans;
+	ans = st.query(0, 9);
+	cout << ans.ans << endl; // 14
+	ans = st.query(2, 7);
+	cout << ans.ans << endl;	// 11
 	return 0;
 }

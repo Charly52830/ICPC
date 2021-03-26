@@ -1,52 +1,15 @@
+#include <set>
 #include <vector>
 #include <iostream>
+#include <algorithm>
 using namespace std;
 
+const int oo = 1e9 + 7;
+typedef multiset<int> msi;
+
 /**
- * Definición de Segment Tree para distintas preguntas comunes.
- * range minimum query: 
- *  SegmentTree<int> st(v, min_function);
- *
- * range maximum query:
- *  SegmentTree<int> st(v, max_function);
- *
- * range sum query:
- *  SegmentTree<int> st(v, sum_function);
- *
- * range gcd/lcm query:
- *  SegmentTree<int> st(v, gcd_function);
- *
- * range sum query con n elementos iniciados en 0:
- *  SegmentTree<int> st(n, sum_function, 0);
- * 
- * actualizar arreglo sustituyendo el valor del índice i con el valor:
- *  st.update(i, val, false);
- *
- * actualizar arreglo sumando el valor del índice i con el valor val:
- *  st.update(i, val, true);
- *
- * Se puede formar cualquier otro Segment Tree con funciones específicas.
- *
- * Las funciones deben regresar el tipo de dato del que se declaró el Segment Tree.
- * Las funciones deben recibir 2 parámetros del tipo de dato del que se declaró
- * el Segment Tree.
+ * Find the smallest number greater or equal to a specified number in the range [i, j] with modification queries.
  */
-
-int min_function(int a,int b) {
-	return min(a, b);
-}
-
-int max_function(int a,int b) {
-	return max(a, b);
-}
-
-int sum_function(int a,int b) {
-	return a + b;
-}
-
-int gcd_function(int a, int b) {
-	return !b ? a : gcd_function(b, a % b);
-}
 
 template <typename T, typename I = T>
 class SegmentTree {
@@ -71,7 +34,7 @@ class SegmentTree {
 	 */
 	#define L(k) (k << 1)
 	#define R(k) (k << 1) + 1
-	T (*merge) (T,T);
+	T (*merge) (T&,T&);
 	T (*make) (I);
 	T *tree;
 	int n;
@@ -79,28 +42,39 @@ class SegmentTree {
 	/**
 	 * Operación para construir recursivamente el segment tree.
 	 */
-	T query(int i, int j, int k, int l, int r) {
-		if(i <= l && r <= j) return tree[k];
+	I query(I val, int i, int j, int k, int l, int r) {
+		if(i <= l && r <= j) {
+			auto it = tree[k].lower_bound(val);
+			if(it != tree[k].end())
+				return *it;
+			return oo;
+		}
 		int m = l + r >> 1;
 		bool left = max(i, l) <= min(j, m);
 		bool right = max(i, m + 1) <= min(j, r);
-		if(left && right) return merge(query(i, j, L(k), l, m), query(i, j, R(k), m + 1, r));
-		else if(left) return query(i, j, L(k), l, m);
-		else return query(i, j, R(k), m + 1, r);
+		if(left && right) 
+			return min(query(val, i, j, L(k), l, m), query(val, i, j, R(k), m + 1, r));
+		else if(left) 
+			return query(val, i, j, L(k), l, m);
+		else 
+			return query(val, i, j, R(k), m + 1, r);
 	}
 	
 	/**
 	 * Operación recursiva para responder la pregunta básica del segment tree.
 	 */
-	void update(int i, I val, int k, int l, int r) {
+	I update(int i, I val, int k, int l, int r) {
+		I p_val;
 		if(l == r) 
-			tree[k] = make(val);
+			p_val = *tree[k].begin();
 		else {
 			int m = l + r >> 1;
-			if(i <= m) update(i, val, L(k), l, m);
-			else update(i, val, R(k), m + 1, r);
-			tree[k] = merge(tree[L(k)], tree[R(k)]);
+			if(i <= m) p_val = update(i, val, L(k), l, m);
+			else p_val = update(i, val, R(k), m + 1, r);
 		}
+		tree[k].erase(tree[k].find(p_val));
+		tree[k].insert(val);
+		return p_val;
 	}
 	
 	/**
@@ -125,7 +99,7 @@ class SegmentTree {
 	 * v: vector del que se construye el segment tree.
 	 * custom_function: función con la que trabaja el segment tree.
 	 */
-	SegmentTree(vector<I> & v, T (*custom_function) (T,T), T (*make_data) (I) = [](I val) {return val;}) {
+	SegmentTree(vector<I> & v, T (*custom_function) (T&,T&), T (*make_data) (I) = [](I val) {return val;}) {
 		merge = custom_function;
 		make = make_data;
 		n = v.size();
@@ -140,9 +114,10 @@ class SegmentTree {
 	 *
 	 * i: indice inferior.
 	 * j: indice superior.
+	 * val: valor por preguntar en el segmento
 	 */
-	T query(int i, int j) {
-		return query(i, j, 1, 0, n - 1);
+	I query(int i, int j, I val) {
+		return query(val, i, j, 1, 0, n - 1);
 	}
 	
 	/**
@@ -158,9 +133,24 @@ class SegmentTree {
 	
 };
 
+msi merge(msi & a, msi & b) {
+	msi ans;
+	for(int i : a) ans.insert(i);
+	for(int i : b) ans.insert(i);
+	return ans;
+}
+
+msi make_data(int val) {
+	msi ans{val};
+	return ans;
+}
+
 int main() {
-	vector<int> v {5, 2, 8, 3, 7};
-	SegmentTree<int> st(v, max_function);
-	cout << st.query(0, 4) << endl;	// 8
+	vector<int> v {4, 9, 2, 1, 3, 4, 7, 6, 7, 2};
+	SegmentTree<msi, int> st(v, merge, make_data);
+	
+	cout << st.query(0, 9, 5) << endl;	// 6
+	st.update(3, 5);
+	cout << st.query(2, 7, 5) << endl;	// 5
 	return 0;
 }

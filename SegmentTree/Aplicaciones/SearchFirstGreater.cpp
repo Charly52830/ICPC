@@ -3,52 +3,14 @@
 using namespace std;
 
 /**
- * Definición de Segment Tree para distintas preguntas comunes.
- * range minimum query: 
- *  SegmentTree<int> st(v, min_function);
- *
- * range maximum query:
- *  SegmentTree<int> st(v, max_function);
- *
- * range sum query:
- *  SegmentTree<int> st(v, sum_function);
- *
- * range gcd/lcm query:
- *  SegmentTree<int> st(v, gcd_function);
- *
- * range sum query con n elementos iniciados en 0:
- *  SegmentTree<int> st(n, sum_function, 0);
- * 
- * actualizar arreglo sustituyendo el valor del índice i con el valor:
- *  st.update(i, val, false);
- *
- * actualizar arreglo sumando el valor del índice i con el valor val:
- *  st.update(i, val, true);
- *
- * Se puede formar cualquier otro Segment Tree con funciones específicas.
- *
- * Las funciones deben regresar el tipo de dato del que se declaró el Segment Tree.
- * Las funciones deben recibir 2 parámetros del tipo de dato del que se declaró
- * el Segment Tree.
+ * Searching for the first element greater or equal than a given amount in the range [i, j]
  */
-
-int min_function(int a,int b) {
-	return min(a, b);
-}
 
 int max_function(int a,int b) {
 	return max(a, b);
 }
 
-int sum_function(int a,int b) {
-	return a + b;
-}
-
-int gcd_function(int a, int b) {
-	return !b ? a : gcd_function(b, a % b);
-}
-
-template <typename T, typename I = T>
+template <typename T>
 class SegmentTree {
 	
 	/**
@@ -67,12 +29,10 @@ class SegmentTree {
 	 * - Encontrar el k-ésimo cero en todo el arreglo
 	 * - Encontrar el prefijo de todo el arreglo cuya suma es >= x
 	 * - Encontrar el primer elemento mayor a x en un rango
-	 * - Encontrar el subsegmento de mayor suma en un rango
 	 */
 	#define L(k) (k << 1)
 	#define R(k) (k << 1) + 1
-	T (*merge) (T,T);
-	T (*make) (I);
+	T (*merge) (T,T), (*make) (T);
 	T *tree;
 	int n;
 	
@@ -92,13 +52,15 @@ class SegmentTree {
 	/**
 	 * Operación recursiva para responder la pregunta básica del segment tree.
 	 */
-	void update(int i, I val, int k, int l, int r) {
-		if(l == r) 
-			tree[k] = make(val);
+	void update(int i, T val, bool add, int k, int l, int r) {
+		if(l == r) {
+			if(add) tree[k] += make(val);
+			else tree[k] = make(val);
+		}
 		else {
 			int m = l + r >> 1;
-			if(i <= m) update(i, val, L(k), l, m);
-			else update(i, val, R(k), m + 1, r);
+			if(i <= m) update(i, val, add, L(k), l, m);
+			else update(i, val, add, R(k), m + 1, r);
 			tree[k] = merge(tree[L(k)], tree[R(k)]);
 		}
 	}
@@ -106,15 +68,38 @@ class SegmentTree {
 	/**
 	 * Operación para construir recursivamente el segment tree.
 	 */
-	void build(vector<I> & v, int i, int l, int r) {
+	void build(vector<T> & v, int i, int l, int r) {
 		if(l == r) 
-			tree[i] = make(v[l]);
+			tree[i] = make(v[l]); 
 		else {
 			int m = l + r >> 1;
 			build(v, L(i), l, m);
 			build(v, R(i), m + 1, r);
 			tree[i] = merge(tree[L(i)], tree[R(i)]);
 		}
+	}
+	
+	int get_first(T val, int i, int j, int k, int l, int r) {
+		if(i <= l && r <= j) {
+			if(tree[k] < val) return -1;
+			while(l != r) {
+				int m = l + r >> 1;
+				if(tree[L(k)] < val)
+					l = m + 1, k = R(k);
+				else
+					r = m, k = L(k);
+			}
+			return l;
+		}
+		int ans = -1;
+		int m = l + r >> 1;
+		bool left = max(i, l) <= min(j, m);
+		bool right = max(i, m + 1) <= min(j, r);
+		if(left)
+			ans = get_first(val, i, j, L(k), l, m);
+		if(right && ans == -1)
+			ans = get_first(val, i, j, R(k), m + 1, r);
+		return ans;
 	}
 	
 	public:
@@ -125,7 +110,7 @@ class SegmentTree {
 	 * v: vector del que se construye el segment tree.
 	 * custom_function: función con la que trabaja el segment tree.
 	 */
-	SegmentTree(vector<I> & v, T (*custom_function) (T,T), T (*make_data) (I) = [](I val) {return val;}) {
+	SegmentTree(vector<T> & v, T (*custom_function) (T,T), T (*make_data) (T) = [](T val) {return val;}) {
 		merge = custom_function;
 		make = make_data;
 		n = v.size();
@@ -151,16 +136,31 @@ class SegmentTree {
 	 *
 	 * i: indice del arreglo a actualizar
 	 * val: valor con el que se va a actualizar el arreglo en la posición i
+	 * add: si add es false, el arreglo en la posición i se sustituirá con el nuevo
+	 *	valor, si es true, en arreglo en la posición i será sumado al valor actual.
 	 */
-	void update(int i, I val) {
-		update(i, val, 1, 0, n - 1);
+	void update(int i, T val, bool add = false) {
+		update(i, val, add, 1, 0, n - 1);
+	}
+	
+	/**
+	 * Función para encontrar el índice del primer elemento del arreglo mayor o igual a val en el rango i a j.
+	 * 
+	 * i: indice inferior
+	 * j: indice superior
+	 * val: valor a buscar
+	 */
+	int get_first(T val, int i, int j) {
+		return get_first(val, i, j, 1, 0, n - 1);
 	}
 	
 };
 
 int main() {
-	vector<int> v {5, 2, 8, 3, 7};
+	vector<int> v {4, 9, 2, 1, 3, 4, 7, 6, 7, 2};
 	SegmentTree<int> st(v, max_function);
-	cout << st.query(0, 4) << endl;	// 8
+	
+	cout << st.get_first(8, 2, 9) << endl; // -1
+	cout << st.get_first(5, 2, 8) << endl; // 6
 	return 0;
 }

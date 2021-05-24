@@ -124,6 +124,8 @@ class SegmentTree {
 	 *
 	 * v: vector del que se construye el segment tree.
 	 * custom_function: función con la que trabaja el segment tree.
+	 * make_data (opcional): función para inicializar los elementos del segment tree. 
+	 * 	Debe procesar un tipo de dato I (input) para regresar un tipo de dato T (tree).
 	 */
 	SegmentTree(vector<I> & v, T (*custom_function) (T,T), T (*make_data) (I) = [](I val) {return val;}) {
 		merge = custom_function;
@@ -142,6 +144,7 @@ class SegmentTree {
 	 * j: indice superior.
 	 */
 	T query(int i, int j) {
+		assert(0 <= i && i <= j && j < n);
 		return query(i, j, 1, 0, n - 1);
 	}
 	
@@ -153,6 +156,7 @@ class SegmentTree {
 	 * val: valor con el que se va a actualizar el arreglo en la posición i
 	 */
 	void update(int i, I val) {
+		assert(0 <= i && i <= j && j < n);
 		update(i, val, 1, 0, n - 1);
 	}
 	

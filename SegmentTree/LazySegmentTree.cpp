@@ -83,9 +83,7 @@ void lazy_sum_max(int & tree, int & lazy, bool marked, int update_val, int l, in
 		lazy = update_val;
 }
 
-#define L(k) (k << 1)
-#define R(k) (k << 1) + 1
-template <typename T>
+template <typename T, typename I = T>
 class LazySegmentTree {
 	
 	/**
@@ -103,11 +101,14 @@ class LazySegmentTree {
 	 * - Encontrar el primer elemento mayor a x en un rango
 	 */
 	
-	T (*func) (T,T);
-	void (*lazy_function) (T&,T&,bool,T,int,int);
-	T *tree, *lazy;
-	bool * marked;
-	int n;
+	#define L(k) (k << 1)
+	#define R(k) (k << 1) + 1
+	T (*merge) (T,T);
+	void (*prop) (T&,int&,bool,int,int,int);
+	T (*make) (I);
+	T *tree;
+	bool *marked;
+	int n, *lazy;
 	
 	/**
 	 * Operación para construir recursivamente el segment tree.
@@ -120,7 +121,7 @@ class LazySegmentTree {
 			int m = l + r >> 1;
 			build(v, L(k), l, m);
 			build(v, R(k), m + 1, r);
-			tree[k] = func(tree[L(k)], tree[R(k)]);
+			tree[k] = merge(tree[L(k)], tree[R(k)]);
 		}
 	}
 	
@@ -129,8 +130,8 @@ class LazySegmentTree {
 	 */
 	void push(int k, int l, int r, int m) {
 		if(marked[k]) {
-			lazy_function(tree[L(k)], lazy[L(k)], marked[L(k)], lazy[k], l, m);
-			lazy_function(tree[R(k)], lazy[R(k)], marked[R(k)], lazy[k], m + 1, r);
+			prop(tree[L(k)], lazy[L(k)], marked[L(k)], lazy[k], l, m);
+			prop(tree[R(k)], lazy[R(k)], marked[R(k)], lazy[k], m + 1, r);
 			marked[L(k)] = true;
 			marked[R(k)] = true;
 			marked[k] = false;
@@ -146,28 +147,23 @@ class LazySegmentTree {
 		push(k, l, r, m);
 		bool left = max(i, l) <= min(j, m);
 		bool right = max(i, m + 1) <= min(j, r);
-		if(left && right)
-			return func(query(i, j, L(k), l, m), query(i, j, R(k), m + 1, r));
-		else if(left)
-			return query(i, j, L(k), l, m);
-		else
-			return query(i, j, R(k), m + 1, r);
+		if(left && right) return merge(query(i, j, L(k), l, m), query(i, j, R(k), m + 1, r));
+		else if(left) return query(i, j, L(k), l, m);
+		else return query(i, j, R(k), m + 1, r);
 	}
 	
 	/**
 	 * Operación recursiva para actualizar el segment tree en rangos
 	 */
-	void update(int i, int j, int k, int l, int r, T val) {
+	void update(int i, int j, int k, int l, int r, int val) {
 		if(i <= l && r <= j)
-			lazy_function(tree[k], lazy[k], marked[k], val, l, r), marked[k] = true;
+			prop(tree[k], lazy[k], marked[k], val, l, r), marked[k] = true;
 		else {
 			int m = l + r >> 1;
 			push(k, l, r, m);
-			if(max(i, l) <= min(j, m))
-				update(i, j, L(k), l, m, val);
-			if(max(i, m + 1) <= min(j, r))
-				update(i, j, R(k), m + 1, r, val);
-			tree[k] = func(tree[L(k)], tree[R(k)]);
+			if(max(i, l) <= min(j, m)) update(i, j, L(k), l, m, val);
+			if(max(i, m + 1) <= min(j, r)) update(i, j, R(k), m + 1, r, val);
+			tree[k] = merge(tree[L(k)], tree[R(k)]);
 		}
 	}
 	
@@ -180,29 +176,18 @@ class LazySegmentTree {
 	 * custom_function: función que define el tipo de pregunta en rangos a responder.
 	 * lazy_function: función de propagación que define cómo se lleva a cabo la 
 	 *  actualización en rangos de forma perezosa.
+	 * make_data (opcional): función para inicializar los elementos del segment tree. 
+	 * 	Debe procesar un tipo de dato I (input) para regresar un tipo de dato T (tree).
 	 */
-	LazySegmentTree(vector<T> & v, T (*custom_function) (T,T), void (*lazy_function) (T&,T&,bool,T,int,int)) {
-		func = custom_function;
-		this -> lazy_function = lazy_function;
+	LazySegmentTree(vector<T> & v, T (*custom_function) (T,T), void (*lazy_function) (T&,int&,bool,int,int,int), T (*make_data) (I) = [](I val) {return val;}) {
+		merge = custom_function;
+		prop = lazy_function;
+		make = make_data;
 		n = v.size();
 		tree = new T[4 * n];
-		lazy = new T[4 * n];
+		lazy = new int[4 * n];
 		marked = new bool[4 * n];
 		build(v, 1, 0, n - 1);
-	}
-	
-	/**
-	 * Constructor que crea un Segment Tree Lazy vacío, es decir, trabaja sobre un 
-	 * arreglo inexistente cuyos valores son puestos por default.
-	 *
-	 * size: tamaño del arreglo.
-	 * custom_function: función que define el tipo de pregunta en rangos a responder.
-	 * lazy_function: función de propagación que define cómo se lleva a cabo la 
-	 *  actualización en rangos de forma perezosa.
-	 */
-	LazySegmentTree(int size, T (*custom_function) (T,T), void (*lazy_function) (T&,T&,bool,T,int,int), T default_value = 0) {
-		vector<T> v(size, default_value);
-		this(v, custom_function, lazy_function);
 	}
 	
 	/**
@@ -213,7 +198,7 @@ class LazySegmentTree {
 	 * j: indice superior
 	 */
 	T query(int i, int j) {
-		assert(0 <= i && i < n && 0 <= j && j < n);
+		assert(0 <= i && i <= j && j < n);
 		return query(i, j, 1, 0, n - 1);
 	}
 	
@@ -225,8 +210,8 @@ class LazySegmentTree {
 	 * j: indice superior del segmento
 	 * val: valor con el que se va a actualizar el segmento
 	 */
-	void update(int i, int j, T val) {
-		assert(0 <= i && i < n && 0 <= j && j < n);
+	void update(int i, int j, int val) {
+		assert(0 <= i && i <= j && j < n);
 		update(i, j, 1, 0, n - 1, val);
 	}
 	

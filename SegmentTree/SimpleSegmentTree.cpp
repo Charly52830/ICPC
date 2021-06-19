@@ -87,24 +87,6 @@ class SegmentTree {
 	}
 	
 	/**
-	 * Constructor que crea un Segment Tree vacío, es decir, trabaja sobre un 
-	 * arreglo inexistente cuyos valores son puestos por default.
-	 *
-	 * size: tamaño del arreglo.
-	 * custom_function: función con la que trabaja el segment tree.
-	 * default_value: valor por defecto de los elementos del arreglo.
-	 */
-	SegmentTree(int size, T (*custom_function) (T,T), T default_value = 0) {
-		n = size;
-		func = custom_function;
-		tree = new T[2 * n];
-		for(int i = 0; i < n; i++) 
-			tree[i + n] = default_value;
-		for(int i = n - 1; i > 0; i--)
-			tree[i] = func(tree[i * 2], tree[i * 2 + 1]);
-	}
-	
-	/**
 	 * Pregunta del arreglo en el rango de i a j evaluando con la función asignada
 	 * Indexado desde 0 y los segmentos son cerrados (la pregunta incluye a los
 	 * indices i y j).

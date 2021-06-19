@@ -156,7 +156,7 @@ class SegmentTree {
 	 * val: valor con el que se va a actualizar el arreglo en la posición i
 	 */
 	void update(int i, I val) {
-		assert(0 <= i && i <= j && j < n);
+		assert(0 <= i && i < n);
 		update(i, val, 1, 0, n - 1);
 	}
 	

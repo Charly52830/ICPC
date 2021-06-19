@@ -5,11 +5,12 @@
 
 #include <map>
 #include <iostream>
+#include <vector>
+
+using namespace std;
 
 /* Max length of the string */
 #define MAXLEN 100010
-
-using namespace std;
 
 struct state {
 	int len, link;
@@ -20,15 +21,11 @@ class SuffixAutomata {
 	
 	private:
 	
-	state* states;
+	vector<state> states;
 	int size, last;
 	
 	void init_automata(int N) {
-		states = (state*) malloc(2 * N * sizeof(state));
-		for(int i = 0; i < 2 * N; i++) {
-			state tmp_state;
-			states[i] = tmp_state;
-		}
+		states = vector<state>(2 * N);
 		last = 0;
 		size = 1;
 		states[0].link = -1;
@@ -72,10 +69,6 @@ class SuffixAutomata {
 		init_automata(str.size());
 		for(int x = 0; x < str.size(); x++)
 			add_char(str[x]);
-	}
-	
-	~SuffixAutomata() {
-		free(states);
 	}
 	
 	bool has_transition(int i, char c) {

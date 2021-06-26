@@ -3,7 +3,7 @@
 using namespace std;
 
 /**
- * Aplicar búsquda binaria dentro del segment tree.
+ * Aplicar búsqueda binaria dentro del segment tree.
  * Devuelve el índice del prefijo que suma >= val
  */
 

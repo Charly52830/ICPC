@@ -6,62 +6,72 @@
 #define mp make_pair
 #define pb push_back
 #define forn(i, n) for(int i = 0; i < int(n); i ++)
+#define forr(i, n) for(int i = int(n); ~i; i --)
 #define fore(i, a, b) for(int i = int(a); i < int(b); i ++)
 using namespace __gnu_pbds;
 using namespace std;
 using cd = complex<double>;
 
+typedef long long ll;
+typedef pair<int, int> pii;
 typedef vector<int> vi;
+typedef vector<vi> Graph;
+typedef tree<int,null_type,less<int>,rb_tree_tag,
+	tree_order_statistics_node_update> indexed_tree;
+
+int const oo = 1e9;
+int const mod = 1e9 + 7;
 
 const double PI = acos(-1);
 
 void fft(vector<cd> & a, bool invert) {
-    int n = a.size();
-    if (n == 1)
-        return;
+	int n = a.size();
+	if (n == 1)
+		return;
 
-    vector<cd> a0(n / 2), a1(n / 2);
-    for (int i = 0; 2 * i < n; i++) {
-        a0[i] = a[2*i];
-        a1[i] = a[2*i+1];
-    }
-    fft(a0, invert);
-    fft(a1, invert);
+	vector<cd> a0(n / 2), a1(n / 2);
+	for (int i = 0; 2 * i < n; i++) {
+		a0[i] = a[2*i];
+		a1[i] = a[2*i+1];
+	}
+	fft(a0, invert);
+	fft(a1, invert);
 
-    double ang = 2 * PI / n * (invert ? -1 : 1);
-    cd w(1), wn(cos(ang), sin(ang));
-    for (int i = 0; 2 * i < n; i++) {
-        a[i] = a0[i] + w * a1[i];
-        a[i + n/2] = a0[i] - w * a1[i];
-        if (invert) {
-            a[i] /= 2;
-            a[i + n/2] /= 2;
-        }
-        w *= wn;
-    }
+	double ang = 2 * PI / n * (invert ? -1 : 1);
+	cd w(1), wn(cos(ang), sin(ang));
+	for (int i = 0; 2 * i < n; i++) {
+		a[i] = a0[i] + w * a1[i];
+		a[i + n/2] = a0[i] - w * a1[i];
+		if (invert) {
+			a[i] /= 2;
+			a[i + n/2] /= 2;
+		}
+		w *= wn;
+	}
 }
 
 /*
- * Multiplicar 2 polinomios en O(n log(n))
+ * Multiplicar/sumar 2 polinomios en O(n log(n))
  */
 vi multiply(vi const& a, vi const& b) {
-    vector<cd> fa(a.begin(), a.end()), fb(b.begin(), b.end());
-    int n = 1;
-    while (n < a.size() + b.size()) 
-        n <<= 1;
-    fa.resize(n);
-    fb.resize(n);
+	vector<cd> fa(a.begin(), a.end()), fb(b.begin(), b.end());
+	int n = 1;
+	while (n < a.size() + b.size()) 
+		n <<= 1;
+	fa.resize(n);
+	fb.resize(n);
 
-    fft(fa, false);
-    fft(fb, false);
-    for (int i = 0; i < n; i++)
-        fa[i] *= fb[i];
-    fft(fa, true);
+	fft(fa, false);
+	fft(fb, false);
+	for (int i = 0; i < n; i++)
+		fa[i] *= fb[i];	// Cambiar el operador para sumar polinomios en vez de multiplicar
+	fft(fa, true);
 
-    vi result(n);
-    for (int i = 0; i < n; i++)
-        result[i] = round(fa[i].real());
-    return result;
+	vi result(n);
+	for (int i = 0; i < n; i++)
+		result[i] = round(fa[i].real());
+	while(*result.rbegin() == 0) result.pop_back();
+	return result;
 }
 
 /* 
@@ -79,6 +89,26 @@ vi coeffs(int roots[], int n) {
 	return ans;
 }
 
+/* 
+ * Multiplicar/sumar 2 números muy grandes dados como strings (hasta 10^1000000) en O(n log n)
+ */
+string multiply(string const& a, string const& b) {
+	vi va, vb;
+	for(auto it = a.rbegin(); it != a.rend(); it ++) va.pb((*it) - '0');
+	for(auto it = b.rbegin(); it != b.rend(); it ++) vb.pb((*it) - '0');
+	vi vc = multiply(va, vb);
+	//unsigned long long k = 0;
+	__int128 k = 0;
+	string ans = "";
+	for(int i : vc) {
+		k += i;
+		ans.pb((k % 10) + '0');
+		k /= 10;
+	}
+	while(k) ans.pb((k % 10) + '0'), k /= 10;
+	reverse(ans.begin(), ans.end());
+	return ans;
+}
 
 int main() {
 	int A[] = {-1, -2, -3};
@@ -86,6 +116,6 @@ int main() {
 	for(int c : coeficientes) 
 		cout << c << " ";
 	cout << endl;
-	/* 1 -6 11 -6 0 0 0 0 */	
+	/* 1 -6 11 -6 */	
 	return 0;
 }

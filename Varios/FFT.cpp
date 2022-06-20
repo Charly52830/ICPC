@@ -110,12 +110,44 @@ string multiply(string const& a, string const& b) {
 	return ans;
 }
 
+/*
+ * Devuelve el producto punto del arreglo a con cada rotación del arreglo b en O(n log n).
+ * El producto punto es la sumatoria de a_i * b_i para todo 0 <= i < n
+ * El resultado en la posición i contiene el producto punto de a con b rotado i posiciones a la izquierda
+ */
+vi convolution(vi const & a, vi const & b) {
+	int n = a.size();
+	vi A, B;
+	for(auto it = a.rbegin(); it != a.rend(); it ++) A.pb(*it);
+	forn(_, n) A.pb(0);
+	forn(_, 2) for(int i : b) B.pb(i);
+	vi C = multiply(A, B), ans;
+	fore(i, n - 1, 2 * n - 1) ans.pb(C[i]);
+	return ans;
+}
+
+/*
+ * Devuelve todas las sumas posibles de a_i + b_i y cuántas veces aparece en O(n log n)
+ *
+ * a_i, b_i <= 10^5 (recomendable)
+ */
+vi all_sums(vi const & a, vi const & b) {
+	int max_A = 0, max_B = 0, n = a.size(), m = b.size();
+	forn(i, n) if(a[i] > a[max_A]) max_A = i;
+	forn(i, m) if(b[i] > b[max_B]) max_B = i;
+	vi A(a[max_A] + 1, 0), B(b[max_B] + 1, 0);
+	for(int i : a) A[i] ++;
+	for(int i : b) B[i] ++;
+	vi ans = multiply(A, B);
+	return ans;
+}
+
 int main() {
-	int A[] = {-1, -2, -3};
-	vi coeficientes = coeffs(A, 3);
-	for(int c : coeficientes) 
-		cout << c << " ";
+	vi a{1, 2, 3}, b{2, 4};
+	vi c = all_sums(a, b);
+	for(int i : c) {
+		cout << i << " ";
+	}
 	cout << endl;
-	/* 1 -6 11 -6 */	
 	return 0;
 }
